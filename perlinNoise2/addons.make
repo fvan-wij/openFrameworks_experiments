@@ -1,0 +1,10 @@
+ofxBeat
+ofxBeat
+ofxGui
+ofxGui
+ofxKinect
+ofxKinect
+ofxOpenCv
+ofxOpenCv
+ofxOsc
+ofxOsc
