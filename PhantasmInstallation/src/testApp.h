@@ -90,6 +90,15 @@ public:
 		VERTICALTILT
 	} e_postfx;
 
+	typedef enum e_artist
+	{
+		CAS_AUGUST,
+		IMMUTE,
+		SUNNY_SAIMUNS,
+		CONIFEAR,
+		YICE
+	} e_artist;
+
 #ifdef USE_KINECT
 	//----------------------ofxKinect--------------------------------
 	ofxKinect 				kinect;
@@ -113,15 +122,14 @@ public:
 	{
 		INTERACTIVE_SCENE,
 		TITLE_SCENE,
-		SECRET_SCENE,
+		SECRET_SCENE
 	} e_scene;
 	int						scene;
 
 //----------------------TITLE_SCENE------------------------------
 		void titleScreenGuiInitialization(void);
 		ofTrueTypeFont	title;
-		ofTrueTypeFont	artist1;
-		ofTrueTypeFont	artist2;
+		ofTrueTypeFont	artist;
 
 		//GUI Visuals
 		ofxPanel 		guiVisual;
@@ -156,6 +164,8 @@ public:
 		int	touchArtist;
 		ofVec2f	strideXY;
 		ofVec2f touchXY;
+		float touchMinBox = 25;
+		float touchMaxBox = 100;
 		bool bHideDebugInfo = false;
 
 
@@ -165,4 +175,8 @@ public:
 		int		pW;
 		int		pH;
 
+		ofColor COL_PHANTASM_PRIMARY 	= ofColor(77, 131, 95);
+		ofColor	COL_PHANTASM_SECONDARY 	= ofColor(211, 202, 151);
+		ofColor	COL_INTERACTIVE 		= ofColor(0);
+		ofColor COL_SECRET 				= ofColor(255, 192, 203);
 };

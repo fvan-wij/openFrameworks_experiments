@@ -13,11 +13,11 @@
     </SliderFloat_colorMult>
     <SliderFloat_velocityMult>
         <name>velocityMult</name>
-        <value>43.000000000</value>
+        <value>10.500000000</value>
     </SliderFloat_velocityMult>
     <SliderFloat_fs.viscocity>
         <name>fs.viscocity</name>
-        <value>0.000150000</value>
+        <value>0.000000000</value>
     </SliderFloat_fs.viscocity>
     <SliderFloat_fs.colorDiffusion>
         <name>fs.colorDiffusion</name>
@@ -29,11 +29,11 @@
     </SliderFloat_fs.fadeSpeed>
     <SliderInt_fs.solverIterations>
         <name>fs.solverIterations</name>
-        <value>10</value>
+        <value>4</value>
     </SliderInt_fs.solverIterations>
     <SliderFloat_fs.deltaT>
         <name>fs.deltaT</name>
-        <value>0.500000000</value>
+        <value>0.173500001</value>
     </SliderFloat_fs.deltaT>
     <ComboBox_fd.drawMode>
         <name>fd.drawMode</name>
@@ -89,15 +89,15 @@
     </SliderFloat_tuioYScaler>
     <SliderFloat_particleRed>
         <name>particleRed</name>
-        <value>0.665000021</value>
+        <value>0.015655806</value>
     </SliderFloat_particleRed>
     <SliderFloat_particleGreen>
         <name>particleGreen</name>
-        <value>0.754999995</value>
+        <value>0.710185111</value>
     </SliderFloat_particleGreen>
     <SliderFloat_particleBlue>
         <name>particleBlue</name>
-        <value>0.779999971</value>
+        <value>0.290978700</value>
     </SliderFloat_particleBlue>
     <Toggle_toggleReactiveParticles>
         <name>toggleReactiveParticles</name>
@@ -109,7 +109,7 @@
     </Toggle_toggleReactiveEdge>
     <Toggle_toggleReactiveParticleColors>
         <name>toggleReactiveParticleColors</name>
-        <value>0</value>
+        <value>1</value>
     </Toggle_toggleReactiveParticleColors>
     <SliderFloat_kickThreshold>
         <name>kickThreshold</name>

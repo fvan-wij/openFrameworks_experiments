@@ -2,6 +2,7 @@
 float tuioXScaler = 1;
 float tuioYScaler = 1;
 
+
 //--------------------------------------------------------------
 void testApp::setup() {	 
 	//Scene management
@@ -10,6 +11,7 @@ void testApp::setup() {
 	scene = 0;
 	touchArtist = 0;
 	strideXY = ofVec2f(4, 4);
+
 	//secret scene
 	img.load("images/sla.png");
 	fbo.allocate(ofGetWidth(), ofGetHeight());
@@ -48,10 +50,9 @@ void testApp::setup() {
     post.createPass<VerticalTiltShifPass>()->setEnabled(false);
 
     int fontsize = 120;
-	int aristsize = 80;
+	int aristsize = 70;
     title.loadFont("fonts/Morelife.otf", fontsize);
-	artist1.loadFont("fonts/WaterResistant.ttf", aristsize);
-	artist2.loadFont("fonts/WaterResistant.ttf", aristsize);
+	artist.loadFont("fonts/WaterResistant.ttf", aristsize);
 }
 
 void testApp::update(){
@@ -68,7 +69,7 @@ while (osc.hasWaitingMessages())
 	if (message.getAddress() == "/1/artist")
 	{
 		std::cout << "Message received!" << std::endl;
-		touchArtist = message.getArgAsFloat(0);
+		touchArtist = ofMap(message.getArgAsFloat(0), 0, 1, 0, 5);
 	}
 	if (message.getAddress() == "/1/stridexy")
 	{
@@ -92,10 +93,23 @@ while (osc.hasWaitingMessages())
 		touchXY.x = ofMap(message.getArgAsFloat(0), 0, 1, 0, ofGetWidth());
 		touchXY.y = ofMap(message.getArgAsFloat(1), 0, 1, ofGetHeight(), 0);
 	}
+#ifdef USE_KINECT
 	if (message.getAddress() == "/1/near")
 	{
 		std::cout << "Message received!" << std::endl;
 		farThreshold = ofMap(message.getArgAsFloat(0), 0, 1, 0, 255);
+	}
+#endif
+
+	if (message.getAddress() == "/1/minbox")
+	{
+		std::cout << "Message received!" << std::endl;
+		touchMinBox = ofMap(message.getArgAsFloat(0), 0, 1, 10, 100);
+	}
+	if (message.getAddress() == "/1/maxbox")
+	{
+		std::cout << "Message received!" << std::endl;
+		touchMaxBox = ofMap(message.getArgAsFloat(0), 0, 1, 50, 300);
 	}
 
 }
@@ -152,7 +166,7 @@ void testApp::draw(){
 	if (scene == INTERACTIVE_SCENE)
 	{
 		post.begin();
-		ofBackground(0, 0, 0);
+		ofBackground(COL_INTERACTIVE);
 		if (drawFluid)
 		{
 			ofClear(0);
@@ -177,8 +191,8 @@ void testApp::draw(){
 	}
 	else if (scene == TITLE_SCENE)
 	{
-		ofBackground(77, 131, 95);
-		ofSetHexColor(0xD3CA97);
+		ofBackground(COL_PHANTASM_PRIMARY);
+		ofSetColor(COL_PHANTASM_SECONDARY);
 		int offset = 20;
 		for (size_t y = offset; y < ofGetViewportHeight() - (offset * 2); y += yStride)
 		{
@@ -216,38 +230,68 @@ void testApp::draw(){
 			if (drawLine)
 				polyline.draw();
 		}
-		guiVisual.draw();
-		guiAudio.draw();
-		ofSetHexColor(0xD3CA97);
+
+		if (!bHideGui)
+		{
+			guiVisual.draw();
+			guiAudio.draw();
+		}
+		ofSetColor(COL_PHANTASM_SECONDARY);
 		ofNoFill();
-		ofSetLineWidth(2);
+		ofSetLineWidth(5);
 		title.drawString("PHANTASM AUDIO", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0);
-		if (touchArtist == 0)
-			artist1.drawString("IMMUTE", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
-		if (touchArtist == 1)
-			artist2.drawString("CAS AUGUST", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist != 5)
+			ofDrawLine(ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 40, ofGetViewportWidth() - 250, ofGetViewportHeight() / 2.0 + 40);
+		if (touchArtist == CAS_AUGUST)
+			artist.drawString("CAS AUGUST W/ RWA", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == IMMUTE)
+			artist.drawString("IMMUTE", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == SUNNY_SAIMUNS)
+			artist.drawString("SUNNY SAIMUNS", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == YICE)
+			artist.drawString("YICE", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == CONIFEAR)
+			artist.drawString("CONIFEAR", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
 	}
 	else if (scene == SECRET_SCENE)
 	{
-		ofBackground(255, 192, 203);
-		int w = ofGetWidth();
-		int h = ofGetHeight();
-		if (pW != w && pH != h)
-		{
-			fbo.clear();
-			fbo.allocate(ofGetWidth(), ofGetHeight());
-		}
-		fbo.begin();
+	#ifdef USE_KINECT
+
+		post.begin();
+		ofBackground(25);
+		kinectUpdateBlobs();
 		for (int i = 0; i < contourFinder.nBlobs; i++)
 		{
 			ofRectangle r = contourFinder.blobs[i].boundingRect;
-			contourFinder.blobs[i].draw(0, 0);
-			img.draw(r.x, r.y, r.width, r.height);
+			float rx = ofMap(r.x + (r.width * 0.5), 0, kinect.getWidth(), 0, ofGetWidth());
+			float ry = ofMap(r.y + (r.height * 0.5), 0, kinect.getHeight(), 0, ofGetHeight());
+			ofVec2f handPos(rx, ry);
+			img.draw(rx, ry, r.width, r.height);
+			if (bHideDebugInfo)
+			{
+				contourFinder.blobs[i].draw(0, 0);
+				drawKinectSettings();
+			}
 		}
-		fbo.end();
-		fbo.draw(0, 0, w, h);
-		pW = ofGetWidth();
-		pH = ofGetHeight();
+
+		ofSetColor(COL_PHANTASM_SECONDARY);
+		ofNoFill();
+		ofSetLineWidth(5);
+		title.drawString("PHANTASM AUDIO", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0);
+		if (touchArtist != 5)
+			ofDrawLine(ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 40, ofGetViewportWidth() - 250, ofGetViewportHeight() / 2.0 + 40);
+		if (touchArtist == CAS_AUGUST)
+			artist.drawString("CAS AUGUST W/ RWA", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == IMMUTE)
+			artist.drawString("IMMUTE", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == SUNNY_SAIMUNS)
+			artist.drawString("SUNNY SAIMUNS", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == YICE)
+			artist.drawString("YICE", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		if (touchArtist == CONIFEAR)
+			artist.drawString("CONIFEAR", ofGetViewportWidth() / 2.0, ofGetViewportHeight() / 2.0 + 150);
+		post.end();
+	#endif
 	}
 }
 
@@ -383,13 +427,6 @@ void testApp::detectKick(void)
 		else
 			drawParticles = false;
 	}
-	// if (bToggleParticles)	
-	// {
-	// 	if (beat.kick() >= kickThreshold)
-	// 		fluidDrawer.setDrawMode(msa::fluid::kDrawVectors);
-	// 	else
-	// 		fluidDrawer.setDrawMode(msa::fluid::kDrawColor);
-	// }
 
 	if (bToggleEdge)
 	{
@@ -473,7 +510,7 @@ void	testApp::kinectAddBlobsToFluid(void)
 
 		ofRectangle r = contourFinder.blobs[i].boundingRect;
 
-		if (r.width > 50.0 && r.height > 50.0)
+		if (r.width > touchMinBox && r.height > touchMinBox && r.width < touchMaxBox && r.height < touchMaxBox)
 		{
 			float rx = ofMap(r.x + (r.width * 0.5), 0, kinect.getWidth(), 0, ofGetWindowWidth());
 			float ry = ofMap(r.y + (r.height * 0.5), 0, kinect.getHeight(), 0, ofGetWindowHeight());
