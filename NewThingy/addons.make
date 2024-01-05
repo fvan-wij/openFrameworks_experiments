@@ -1,0 +1,14 @@
+ofxAudioFile
+ofxAudioFile
+ofxGui
+ofxGui
+ofxKinect
+ofxKinect
+ofxMidi
+ofxMidi
+ofxOpenCv
+ofxOpenCv
+ofxOsc
+ofxOsc
+ofxPDSP
+ofxPDSP
