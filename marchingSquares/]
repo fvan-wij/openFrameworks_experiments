@@ -1,0 +1,106 @@
+#include "ofApp.hpp"
+#include "ofAppRunner.h"
+#include "ofGraphicsConstants.h"
+
+//--------------------------------------------------------------
+void ofApp::initializeFieldVector()
+{
+	RES = 10;
+	COLS = WIDTH / RES + 1;
+	ROWS = HEIGHT / RES + 1;
+	FIELD.resize(COLS);
+}
+//--------------------------------------------------------------
+void ofApp::setup(){
+	initializeFieldVector();
+}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+		
+}
+
+int	binaryToNumber(int b8, int b4, int b2, int b1)
+{
+	return (b8 * 8 + b4 * 4 + b2 * 2 + b1 * 1);
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+	ofBackgroundGradient(ofColor(200), ofColor(100), OF_GRADIENT_CIRCULAR);
+	for (int i = 0; i < COLS; i++)
+	{
+		XOFFSET += 0.01;
+		for (int j = 0; j < ROWS; j++)
+		{
+			YOFFSET += 0.01;
+			float val = ofNoise(XOFFSET, YOFFSET);
+			if (val < 0.5)
+				FIELD[i].push_back(0);
+			else
+				FIELD[i].push_back(1);
+			// std::cout << FIELD[i][j] << endl;
+			// std::cout << val << endl;
+		}
+	}
+	
+	int state;
+
+	state = 0;
+	for (int i = 0; i < COLS; i++)
+	{
+		for (int j = 0; j < ROWS; j++)
+		{
+			// ofSetColor(FIELD[i][j] * 255);
+			// ofDrawCircle(i * RES, j * RES, 1);
+			if (i + 1 < COLS && j + 1 < ROWS)
+			{
+				state = binaryToNumber(ceil(FIELD[i][j]), ceil(FIELD[i + 1][j]), ceil(FIELD[i + 1][j + 1]), ceil(FIELD[i][j + 1]));
+				ofVec2f a(i * RES + RES * 0.5, j * RES);
+				ofVec2f b(i * RES + RES, j * RES + RES * 0.5);
+				ofVec2f c(i * RES + RES * 0.5, j * RES + RES);
+				ofVec2f d(i * RES, j * RES + RES * 0.5);
+				ofSetColor(0, 0, 255);
+				if (state == 1)
+					ofDrawLine(c, d);
+				else if (state == 2)
+					ofDrawLine(b, c);
+				else if (state == 3)
+					ofDrawLine(b, d);
+				else if (state == 4)
+					ofDrawLine(a, b);
+				else if (state == 5)
+				{
+					ofDrawLine(a, d);
+					ofDrawLine(b, c);
+
+				}
+				else if (state == 6)
+					ofDrawLine(a, c);
+				else if (state == 7)
+					ofDrawLine(a, d);
+				else if (state == 8)
+					ofDrawLine(a, d);
+				else if (state == 9)
+					ofDrawLine(a, c);
+				else if (state == 10)
+				{
+					ofDrawLine(a, b);
+					ofDrawLine(c, d);
+
+				}
+				else if (state == 11)
+					ofDrawLine(a, b);
+				else if (state == 12)
+					ofDrawLine(b, d);
+				else if (state == 13)
+					ofDrawLine(b, c);
+				else if (state == 14)
+					ofDrawLine(c, d);
+			}
+		}
+	}
+	ZOFFSET += 0.01;
+}
+
+//--------------------------------------------------------------

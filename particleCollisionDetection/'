@@ -1,0 +1,324 @@
+#include "ofApp.hpp" 
+#include "ofAppRunner.h"
+
+//--------------------------------------------------------------
+void ofApp::setup(){
+	// tileSize.x = (float) kinect.getWidth() / TILES;
+	// tileSize.y = (float) kinect.getHeight() / TILES;
+	//
+	// for (size_t i = 0; i < PARTICLES; i++)
+	// {
+	// 	ofVec2f p(ofRandom(WIDTH), ofRandom(HEIGHT));
+	// 	particle point(p, ofRandom(2, 5));
+	// 	particles.push_back(point);
+	// }
+	// cellVector.resize(TILES);
+	// for (int x = 0; x < TILES; x++)
+	// {
+	// 	for (int y = 0; y < TILES; y++)
+	// 	{
+	// 		ofVec2f cell(x * tileSize.x, y * tileSize.y);
+	// 		cellVector[y].push_back(cell);
+	// 	}
+	// }
+
+	//Audio input initialization
+	soundStream.printDeviceList();
+	int			bufferSize = 256;	
+	left.assign(bufferSize, 0.0);
+	right.assign(bufferSize, 0.0);
+	volHistory.assign(400, 0.0);
+
+	bufferCounter 	= 0;
+	drawCounter 	= 0;
+	smoothedVol 	= 0.0;
+	scaledVol 		= 0.0;
+
+	ofSoundStreamSettings settings;
+	
+	settings.setInListener(this);
+	settings.sampleRate = 44100;
+	settings.numOutputChannels = 0;
+	settings.numInputChannels = 1;
+	settings.bufferSize = bufferSize;
+	soundStream.setup(settings);
+
+
+
+
+
+
+	ofEnableAlphaBlending(); 
+	ofSetBackgroundColor(10);
+	
+	//Kinect initialization
+	kinect.init(false, false);
+	kinect.open();
+	kinect.setCameraTiltAngle(0.0);
+	grayImage.allocate(kinect.width, kinect.height);
+	nearTreshold = 230;
+	farTreshold = 70;
+	kinectWidth = kinect.getWidth();
+	kinectHeight = kinect.getHeight();
+	font.load("../bin/data/fonts/Bebas-Regular.ttf", TILES);
+	// stride = WIDTH / TILES;
+	float scalerX = (((float) WIDTH - kinectWidth) / kinectWidth) + 1;
+	float scalerY = (((float) HEIGHT - kinectHeight) / kinectHeight) + 1;
+	printf("kinectWidth: %d, kinectHeight: %d, WIDTH: %d, HEIGHT: %d\n", kinectWidth, kinectHeight, WIDTH, HEIGHT);
+	int col;
+
+	col = 0;
+	kinectPoints.resize(HEIGHT / TILES);
+	for (int i = 0; i < kinectWidth; i++)
+	{
+		for (int j = 0; j < kinectHeight; j++)
+		{
+			if (j % TILES == 0)
+			{
+				kinectPoint point (i * scalerX, j * scalerY, 2);
+				kinectPoints[col].push_back(point);
+			}
+		}
+		if (i % TILES == 0)
+			col++;
+	}
+
+	// printf("size of kinectPoints[]: %ld, size of kinectPoints: %ld\n",kinectPoints[0].size(), kinectPoints.size());
+}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+	//Audio	
+	scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
+	volHistory.push_back(scaledVol);
+	if (volHistory.size() >= 400)
+		volHistory.erase(volHistory.begin(), volHistory.begin() + 1);
+
+	//Kinect
+	kinect.update();
+	int col;
+	int row;
+
+	col = 0;
+	row = 0;
+	if (kinect.isFrameNew())
+	{
+		grayImage.setFromPixels(kinect.getDepthPixels());
+		ofPixels & pix = grayImage.getPixels();
+		for (int i = 0; i < kinectWidth; i++)
+		{
+			for (int j = 0; j < kinectHeight; j++)
+			{
+				int arrayIndex = j * kinectWidth + i;
+				if (j % TILES == 0)
+				{
+					kinectPoints[col][row].m_Color.g = pix[arrayIndex];
+					if (pix[arrayIndex] < nearTreshold && pix[arrayIndex] > farTreshold)
+						kinectPoints[col][row].m_Visible = true;
+					else
+						kinectPoints[col][row].m_Visible = false;
+					// if (state == 1 && kinectPoints[col][row].m_Visible == true)
+					kinectPoints[col][row].update(kinectWidth, kinectHeight);
+					// else if (state == 0)
+					// 	kinectPoints[col][row].resetPos();
+					row++;
+				}
+			}
+			row = 0;
+			if (i % TILES == 0)
+				col++;
+		}
+	}
+	// dt = ofGetLastFrameTime();
+	// spacePartitionParticles();
+	// for (size_t i = 0; i < particles.size(); i++)
+	// 	particles[i].update(dt);
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+	// for (size_t i = 0; i < particles.size(); i++)
+	// 		particles[i].draw();
+	// drawContour();
+
+	//Audio
+	for (unsigned int i = 0; i < left.size(); i++)
+	{
+		ofSetColor(255, 0, 0);
+		ofDrawRectangle(0, int(HEIGHT / 2), left[i] * 2.0f, 50);
+
+	}
+	for (unsigned int i = 0; i < right.size(); i++)
+	{
+		ofSetColor(0, 255, 0);
+		ofDrawRectangle(0, int(HEIGHT / 2 + 50), right[i] * 2.0f, 50);
+
+	}
+
+	//Kinect
+	// int col;
+	// int row;
+	//
+	// col = 0;
+	// row = 0;
+	// 	for (int i = 0; i < kinectWidth; i++)
+	// 	{
+	// 		for (int j = 0; j < kinectHeight; j++)
+	// 		{
+	// 			if (j % TILES == 0)
+	// 			{
+	// 				kinectPoints[col][row].draw(font);
+	// 				row++;
+	// 			}
+	// 		}
+	// 		row = 0;
+	// 		if (i % TILES == 0)
+	// 			col++;
+	// 	}
+}
+
+void	ofApp::keyPressed(int key)
+{
+	switch (key)
+	{
+		case 'i':
+			soundStream.start();
+		case 'e':
+			soundStream.stop();
+		case 's':
+			state = 0;
+			break;
+		case 'S':
+			state = 1;
+			break;
+		case '>':
+			farTreshold++;
+			break;
+		case '<':
+			farTreshold--;
+			break;
+		case '-':
+			nearTreshold++;
+			break;
+		case '+':
+			nearTreshold--;
+			break;
+		case 'f':
+		case 'F':
+			ofToggleFullscreen();
+			break;
+		default:
+			break;
+	}
+}
+
+//Audio---------------------------------------------------------
+void ofApp::audioIn(ofSoundBuffer & input)
+{
+	float	curVol 		= 0.0;
+	int		numCounted 	= 0;
+	for (size_t i = 0; i < input.getNumFrames(); i++)
+	{
+		left[i] = input[i * 2] * 0.5;
+		right[i] = input[i * 2 + 1] * 0.5;
+
+		curVol += left[i] * left[i];
+		curVol += right[i] * right[i];
+		numCounted +=2;
+	}
+	curVol /= (float) numCounted;
+	curVol  = sqrt(curVol);
+	smoothedVol *= 0.93;
+	smoothedVol += 0.07 + curVol;
+	bufferCounter++;
+}
+
+//Kinect--------------------------------------------------------
+vector<particle *> ofApp::particleIsWithinCell(ofVec2f cell)
+{
+	vector<particle *> particlePointers;
+
+	for (size_t i = 0; i < particles.size(); i++)
+	{
+		if (particles[i].m_Position.x > cell.x && particles[i].m_Position.x < (cell.x + tileSize.x) && particles[i].m_Position.y > cell.y && particles[i].m_Position.y < (cell.y + tileSize.y))
+			particlePointers.push_back(&particles[i]);
+	}
+	return particlePointers;
+}
+
+//--------------------------------------------------------------
+void	ofApp::checkCollision(vector<particle *> particlePointers)
+{
+	int n = particlePointers.size();
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = i + 1; j < n; j++)
+		{
+			if (particlePointers[i]->intersects(*particlePointers[j]))
+				resolveCollision(*particlePointers[i], *particlePointers[j]);
+		}
+	}
+	particlePointers.clear();
+}
+
+//--------------------------------------------------------------
+void ofApp::spacePartitionParticles()
+{
+	vector<particle *> particlePointers;
+
+	for (int i = 0; i < TILES; i++)
+	{
+		for (int j = 0; j < TILES; j++)
+		{
+			particlePointers = particleIsWithinCell(cellVector[i][j]);
+			if (particlePointers.size() > 0)
+				checkCollision(particlePointers);
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::resolveCollision(particle& p1, particle& p2)
+{
+		float relativeVelocityX = p2.m_Velocity.x - p1.m_Velocity.x;
+		float relativeVelocityY = p2.m_Velocity.y - p1.m_Velocity.y;
+
+		// Calculate the normal vector.
+		float normalX = p2.m_Position.x - p1.m_Position.x;
+		float normalY = p2.m_Position.y - p1.m_Position.y;
+		float normalLength = sqrt(normalX * normalX + normalY * normalY);
+		normalX /= normalLength;
+		normalY /= normalLength;
+
+		// Calculate the relative velocity along the normal.
+		float relativeVelocityAlongNormal = relativeVelocityX * normalX + relativeVelocityY * normalY;
+
+		// Calculate the impulse (change in velocity) along the normal.
+		float impulse = (2.0f * relativeVelocityAlongNormal) / (p1.m_Mass + p2.m_Mass);
+
+		// Update the velocities of the particles.
+		p1.m_Velocity.x += impulse * p2.m_Mass * normalX;
+		p1.m_Velocity.y += impulse * p2.m_Mass * normalY;
+		p2.m_Velocity.x -= impulse * p1.m_Mass * normalX;
+		p2.m_Velocity.y -= impulse * p1.m_Mass * normalY;
+}
+
+void ofApp::exit()
+{
+	kinect.setCameraTiltAngle(0.0);
+	kinect.close();
+}
+
+
+//--------------------------------------------------------------
+void ofApp::drawContour()
+{
+	for (size_t x = 0; x < kinectPoints.size(); x++) {
+		for (size_t y = 0; y < kinectPoints[x].size(); y++) {
+			float distance = kinect.getDistanceAt(x, y);
+			if (distance > nearTreshold && distance < farTreshold)
+				kinectPoints[x][y].draw(font);
+		}
+	}
+}
+
