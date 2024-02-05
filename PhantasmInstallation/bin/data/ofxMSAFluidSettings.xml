@@ -1,7 +1,7 @@
 <controls>
     <SliderInt_fluidCellsX>
         <name>fluidCellsX</name>
-        <value>150</value>
+        <value>293</value>
     </SliderInt_fluidCellsX>
     <Button_resizeFluid>
         <name>resizeFluid</name>
@@ -17,27 +17,27 @@
     </SliderFloat_velocityMult>
     <SliderFloat_fs.viscocity>
         <name>fs.viscocity</name>
-        <value>0.000000000</value>
+        <value>0.000150000</value>
     </SliderFloat_fs.viscocity>
     <SliderFloat_fs.colorDiffusion>
         <name>fs.colorDiffusion</name>
-        <value>0.000000000</value>
+        <value>0.000010500</value>
     </SliderFloat_fs.colorDiffusion>
     <SliderFloat_fs.fadeSpeed>
         <name>fs.fadeSpeed</name>
-        <value>0.002000000</value>
+        <value>0.017500000</value>
     </SliderFloat_fs.fadeSpeed>
     <SliderInt_fs.solverIterations>
         <name>fs.solverIterations</name>
-        <value>4</value>
+        <value>34</value>
     </SliderInt_fs.solverIterations>
     <SliderFloat_fs.deltaT>
         <name>fs.deltaT</name>
-        <value>0.173500001</value>
+        <value>0.149000004</value>
     </SliderFloat_fs.deltaT>
     <ComboBox_fd.drawMode>
         <name>fd.drawMode</name>
-        <value>3</value>
+        <value>0</value>
     </ComboBox_fd.drawMode>
     <Toggle_fs.doRGB>
         <name>fs.doRGB</name>
@@ -53,7 +53,7 @@
     </Toggle_drawFluid>
     <Toggle_drawParticles>
         <name>drawParticles</name>
-        <value>1</value>
+        <value>0</value>
     </Toggle_drawParticles>
     <SliderFloat_velDrawMult>
         <name>velDrawMult</name>
@@ -105,7 +105,7 @@
     </Toggle_toggleReactiveParticles>
     <Toggle_toggleReactiveEdge>
         <name>toggleReactiveEdge</name>
-        <value>0</value>
+        <value>1</value>
     </Toggle_toggleReactiveEdge>
     <Toggle_toggleReactiveParticleColors>
         <name>toggleReactiveParticleColors</name>

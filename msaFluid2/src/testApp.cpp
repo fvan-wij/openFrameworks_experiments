@@ -198,7 +198,7 @@ void testApp::draw(){
 #ifdef USE_KINECT
 	drawKinectSettings();
 #endif
-  std::cout << beat.kick() << std::endl;
+  // std::cout << beat.kick() << std::endl;
 }
 
 

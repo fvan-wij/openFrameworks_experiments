@@ -1,7 +1,7 @@
 <controls>
     <SliderInt_fluidCellsX>
         <name>fluidCellsX</name>
-        <value>172</value>
+        <value>150</value>
     </SliderInt_fluidCellsX>
     <Button_resizeFluid>
         <name>resizeFluid</name>
@@ -9,7 +9,7 @@
     </Button_resizeFluid>
     <SliderFloat_colorMult>
         <name>colorMult</name>
-        <value>35.500000000</value>
+        <value>73.000000000</value>
     </SliderFloat_colorMult>
     <SliderFloat_velocityMult>
         <name>velocityMult</name>
@@ -17,7 +17,7 @@
     </SliderFloat_velocityMult>
     <SliderFloat_fs.viscocity>
         <name>fs.viscocity</name>
-        <value>0.000100000</value>
+        <value>0.000150000</value>
     </SliderFloat_fs.viscocity>
     <SliderFloat_fs.colorDiffusion>
         <name>fs.colorDiffusion</name>
@@ -25,15 +25,15 @@
     </SliderFloat_fs.colorDiffusion>
     <SliderFloat_fs.fadeSpeed>
         <name>fs.fadeSpeed</name>
-        <value>0.016000001</value>
+        <value>0.002000000</value>
     </SliderFloat_fs.fadeSpeed>
     <SliderInt_fs.solverIterations>
         <name>fs.solverIterations</name>
-        <value>1</value>
+        <value>10</value>
     </SliderInt_fs.solverIterations>
     <SliderFloat_fs.deltaT>
         <name>fs.deltaT</name>
-        <value>0.100000001</value>
+        <value>0.500000000</value>
     </SliderFloat_fs.deltaT>
     <ComboBox_fd.drawMode>
         <name>fd.drawMode</name>
@@ -65,7 +65,7 @@
     </SliderFloat_velDrawThreshold>
     <SliderFloat_brightness>
         <name>brightness</name>
-        <value>1.799999952</value>
+        <value>0.930000007</value>
     </SliderFloat_brightness>
     <Toggle_useAdditiveBlending>
         <name>useAdditiveBlending</name>
@@ -89,7 +89,7 @@
     </SliderFloat_tuioYScaler>
     <SliderFloat_particleRed>
         <name>particleRed</name>
-        <value>0.059937742</value>
+        <value>0.519999981</value>
     </SliderFloat_particleRed>
     <SliderFloat_particleGreen>
         <name>particleGreen</name>
@@ -101,15 +101,15 @@
     </SliderFloat_particleBlue>
     <Toggle_toggleReactiveParticles>
         <name>toggleReactiveParticles</name>
-        <value>0</value>
+        <value>1</value>
     </Toggle_toggleReactiveParticles>
     <Toggle_toggleReactiveEdge>
         <name>toggleReactiveEdge</name>
-        <value>0</value>
+        <value>1</value>
     </Toggle_toggleReactiveEdge>
     <Toggle_toggleReactiveParticleColors>
         <name>toggleReactiveParticleColors</name>
-        <value>0</value>
+        <value>1</value>
     </Toggle_toggleReactiveParticleColors>
     <SliderFloat_kickThreshold>
         <name>kickThreshold</name>

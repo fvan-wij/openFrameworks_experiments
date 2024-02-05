@@ -165,7 +165,7 @@ if (scene > 2)
 void testApp::draw(){
 	if (scene == INTERACTIVE_SCENE)
 	{
-		post.begin();
+		// post.begin();
 		ofBackground(COL_INTERACTIVE);
 		if (drawFluid)
 		{
@@ -187,7 +187,7 @@ void testApp::draw(){
 #endif
 		if (!bHideGui)
 			gui.draw();
-		post.end();
+		// post.end();
 	}
 	else if (scene == TITLE_SCENE)
 	{
